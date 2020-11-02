@@ -1,0 +1,10 @@
+{
+    "name": "no_name_yet",
+    "best_trial_dir": "/Users/madsobdrup/ray_results/DEFAULT/DEFAULT_976ea_00001_1_batch_size=4,final_1x1_1=64,final_1x1_2=1024,h1=16,h2=64,lr=0.096376,wd=0.00077634_2020-11-02_11-45-58/checkpoint_0/",
+    "train_data": "['575-ws-training']",
+    "test_data": "575-ws-training",
+    "start_date_train": "['2021-11-17 12:04:00']",
+    "start_date_test": "2021-12-17 22:02:00",
+    "end_date_train": "['2021-12-17 21:57:00']",
+    "end_date_test": "2022-01-01 23:55:00"
+}
