@@ -107,7 +107,7 @@ class evaluateModel:
         plotPredictionTimeseries(_pred, _target, figure_path)
 
 
-    def clarkesErrorGrid(self, unit, figure_path = None, dataType = 'test') -> Tuple[dict, dict]:
+    def clarkesErrorGrid(self, unit, figure_path = None, dataType = 'test'):
 
         # Determine which part of the data object that should be used
         if dataType == 'test':

@@ -113,14 +113,14 @@ def train_cgm(config: dict, data_obj=None, max_epochs=10, n_epochs_stop=5, grace
                     optimizer.zero_grad()
 
                     # forward + backward + optimize
-                    outputs = model(inputs).squeeze()
-                    loss = criterion(outputs, targets)
+                    outputs = model(inputs)
+                    loss = criterion(outputs, targets.reshape(-1,1))
                     loss.backward()
                     optimizer.step()
 
                     # print statistics
                     running_loss += loss.item()
-                    epoch_loss += running_loss
+                    epoch_loss += loss.item()
                     epoch_steps += 1
 
                     print_every = -50
@@ -140,9 +140,9 @@ def train_cgm(config: dict, data_obj=None, max_epochs=10, n_epochs_stop=5, grace
                     if targets.size(0) == int(config['batch_size']):
                         inputs, targets = inputs.to(device), targets.to(device)
 
-                        outputs = model(inputs).squeeze()
+                        outputs = model(inputs)
 
-                        loss = criterion(outputs, targets)
+                        loss = criterion(outputs, targets.reshape(-1,1))
                         val_loss += loss.cpu().numpy()
                         val_steps += 1
             
