@@ -1,0 +1,10 @@
+{
+    "name": "no_name_yet",
+    "best_trial_dir": "/Users/madsobdrup/ray_results/DEFAULT/DEFAULT_effde_00002_2_batch_size=4,final_1x1_1=512,final_1x1_2=512,h1=32,h2=32,lr=0.0021237,wd=0.00076051_2020-11-02_11-55-36/checkpoint_2/",
+    "train_data": "['575-ws-training']",
+    "test_data": "575-ws-training",
+    "start_date_train": "['2021-11-17 12:04:00']",
+    "start_date_test": "2021-12-17 22:02:00",
+    "end_date_train": "['2021-12-17 21:57:00']",
+    "end_date_test": "2022-01-01 23:55:00"
+}

@@ -1,0 +1,10 @@
+{
+    "name": "no_name_yet",
+    "best_trial_dir": "/Users/madsobdrup/ray_results/DEFAULT/DEFAULT_a852a_00000_0_batch_size=4,final_1x1_1=128,final_1x1_2=256,h1=64,h2=32,lr=0.0010575,wd=0.00030828_2020-11-02_12-07-55/checkpoint_2/",
+    "train_data": "['559-ws-training']",
+    "test_data": "559-ws-training",
+    "start_date_train": "['2021-12-07 01:17:00']",
+    "start_date_test": "2022-01-06 00:01:00",
+    "end_date_train": "['2022-01-05 23:56:00']",
+    "end_date_test": "2022-01-17 23:56:00"
+}
