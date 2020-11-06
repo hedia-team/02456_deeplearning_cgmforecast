@@ -1,19 +1,19 @@
 import os
-import numpy as np
 from functools import partial
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from config import code_path
 from ray import tune
 from torch.autograd import Variable
 
 from src.data import DataframeDataLoader
 from src.models.hediaNetExample import DilatedNet
 
-from typing import Tuple
 
 #%%
 def predict_cgm(data_obj, model: nn.Module) -> np.ndarray:
@@ -30,7 +30,7 @@ def predict_cgm(data_obj, model: nn.Module) -> np.ndarray:
     outputs = []
     #loss = 0
     with torch.no_grad():
-        for batch_idx, (data, target) in enumerate(test_loader):
+        for (data, target) in test_loader:
             data = Variable(data.permute(0, 2, 1)).contiguous()
             target = Variable(target.unsqueeze_(1))
             output = model(data)
@@ -158,7 +158,9 @@ def train_cgm(config: dict, data_obj=None, max_epochs=10, n_epochs_stop=5, grace
                 min_val_loss = val_loss / val_steps
 
                 if not useRayTune:
-                    path = os.path.join('./src/model_state_tmp', "checkpoint")
+                    path = code_path / 'src' / 'model_state_tmp' 
+                    path.mkdir(exist_ok=True, parents=True)
+                    path = path / 'checkpoint'
                     torch.save((model.state_dict(), optimizer.state_dict()), path)
                     print("Saved better model!")
 
