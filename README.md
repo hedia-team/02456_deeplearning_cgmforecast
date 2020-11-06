@@ -5,11 +5,14 @@ Using the repo requires installation of `poetry`. Guide to installation can be f
 This tool manages all the required python packages in a virtual environement. After installation run
 `poetry install`from the main directory of the repo.
 
+# Path configuration
+Based on `config.template.py` you should create a file `config.py` that defines relevant paths. The `code_path`should refer to this repo, while the other are up to you. It would make sense to locate these outside of the repo to avoid pushing large files to github (otherwiese remember to add these to `.gitignore` before adding.
+
 # Scripts
 The repo consist of three main scripts.
-* `example_script.py`shows how a model can be defined and trained, data can be extracted and how the model evaluation work. Yeah, basically, it just shows the different key functions work.
+* `example_script.py`shows how a model can be defined and trained, data can be extracted and how the model evaluation work. Yeah, basically, it just shows the different key functions work. Create a file with parameters for what data to use in `.src/parameters/par.py` based on `.src/parameters/par_template.py`.
 * `optmizeHypers.py` searches for the best hyperparameters given a model and a searching area. You can play around with the searching area searching technqiues to find even better model configurations. 
-* `evaluateAll.py` find the best hyperparameters and evalautes the results on a user defined set of data.
+* `evaluateAll.py` find the best hyperparameters and evalautes the results on a user defined set of data. Create a file with parameters for what data to use in `.src/parameters/evaluateAllPars.py` based on `.src/parameters/evaluateAllPars.template.py`.
 
 The repo also consist of a bunch of helper functions found in `/src/` that load data, evaluate models and so on. 
 
