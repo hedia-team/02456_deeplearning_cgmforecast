@@ -137,7 +137,7 @@ dmypy.json
 .idea/
 
 # Local configuration
-cgm_forecast/config.py
+config.py
 
 # Figure folder
 figs/
@@ -152,7 +152,7 @@ trained_models_hypo/
 .DS_Store
 
 # Checkpoint directory
-cgm_forecast/src/model_state_tmp/
+src/model_state_tmp/
 
 # VS Code
 **/.vscode/
@@ -165,8 +165,8 @@ cgm_forecast/src/model_state_tmp/
 hyper_experiments/
 
 # Parameters
-cgm_forecast/src/parameter_sets/par.py
-cgm_forecast/src/parameter_sets/evaluateAllPars.py
+src/parameter_sets/par.py
+src/parameter_sets/evaluateAllPars.py
 
 # Result directory
 results/
