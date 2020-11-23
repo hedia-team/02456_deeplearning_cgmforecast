@@ -151,12 +151,15 @@ for i, (train_data, val_data, test_data) in enumerate(zip(train_data_sequence, v
     if evaluationConfiguration['plotTimeseries']:
         evalObject.get_timeSeriesPlot(figure_path=model_figure_path)
     if evaluationConfiguration['clarke']:
-        clarkes, clarkes_prob = evalObject.clarkesErrorGrid(
+        clarkes, clarkes_prob = evalObject.apply_clarkes_error_grid(
+            'mg/dl', figure_path=model_figure_path)
+    if evaluationConfiguration['parke']:
+        parkes, parkes_prob = evalObject.apply_parkes_error_grid(
             'mg/dl', figure_path=model_figure_path)
 
     scores.loc[str([train_data, val_data, test_data])] = [model_id,
                                                           distance['rmse'], distance['mard'], distance['mae'],
-                                                          clarkes_prob['A'], clarkes_prob['B'], clarkes_prob['C'], clarkes_prob['D'], clarkes_prob['E'],
+                                                          parkes_prob['A'], parkes_prob['B'], parkes_prob['C'], parkes_prob['D'], parkes_prob['E'],
                                                           hypo['precision'], hypo['recall'], hypo['F1'], lag
                                                           ]
 

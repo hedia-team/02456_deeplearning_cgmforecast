@@ -4,7 +4,6 @@ from collections import Iterable
 from typing import Tuple
 
 import matplotlib.pyplot as plt
-import src.metrics as metrics
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -13,8 +12,10 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 from torch import nn
 
+import src.metrics as metrics
 from src.ClarkeErrorGrid.ClarkeErrorGrid import clarke_error_grid
 from src.data import DataframeDataLoader
+from src.ParkesErrorGrid.ParkesErrorGrid import parke_error_grid
 from src.tools import crosscorr, predict_cgm
 
 
@@ -124,6 +125,26 @@ class evaluateModel:
         if figure_path is not None:
             figure.savefig(figure_path / 'clarke.png')
             figure.savefig(figure_path / 'clarke.pdf', format='pdf')
+
+        return zones, zones_prob
+
+    def apply_parkes_error_grid(self, unit, figure_path=None, dataType='test') -> Tuple[dict, dict]:
+
+        # Determine which part of the data object that should be used
+        if dataType == 'test':
+            _pred = self.test_predictions_absolute
+            _target = self.test_df['target']
+
+        elif dataType == 'train':
+            pass
+        elif dataType == 'validation':
+            pass
+
+        figure, zones, zones_prob = parke_error_grid(np.array(_target), np.array(_pred), '', unit)
+
+        if figure_path is not None:
+            figure.savefig(figure_path / 'parke.png')
+            figure.savefig(figure_path / 'parke.pdf', format='pdf')
 
         return zones, zones_prob
 
