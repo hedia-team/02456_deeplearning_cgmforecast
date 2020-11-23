@@ -23,7 +23,7 @@ from src.parameter_sets.evaluateAllPars import (GRACE_PERIOD, GRACE_PERIOD_FINAL
 from src.tools import train_cgm
 
 scores = pd.DataFrame(columns=['RMSE', 'MARD', 'MAE',
-                               'A', 'B', 'C', 'D', 'E', 'precision', 'recall', 'F1'])
+                               'A', 'B', 'C', 'D', 'E', 'precision', 'recall', 'F1', 'lag'])
 scores.index.name = '[training], test'
 
 for i, (train_data, val_data, test_data) in enumerate(zip(train_data_sequence, val_data_sequence, test_data_sequence)):
@@ -154,11 +154,11 @@ for i, (train_data, val_data, test_data) in enumerate(zip(train_data_sequence, v
         clarkes, clarkes_prob = evalObject.clarkesErrorGrid(
             'mg/dl', figure_path=model_figure_path)
 
-    scores.loc[str([train_data, test_data])] = [
-        distance['rmse'], distance['mard'], distance['mae'],
-        clarkes_prob['A'], clarkes_prob['B'], clarkes_prob['C'], clarkes_prob['D'], clarkes_prob['E'],
-        hypo['precision'], hypo['recall'], hypo['F1']
-    ]
+    scores.loc[str([train_data, val_data, test_data])] = [model_id,
+                                                          distance['rmse'], distance['mard'], distance['mae'],
+                                                          clarkes_prob['A'], clarkes_prob['B'], clarkes_prob['C'], clarkes_prob['D'], clarkes_prob['E'],
+                                                          hypo['precision'], hypo['recall'], hypo['F1'], lag
+                                                          ]
 
     # Save results
     result_path.mkdir(exist_ok=True, parents=True)
