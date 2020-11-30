@@ -2,7 +2,6 @@
 import datetime
 import getpass
 import json
-import os
 from shutil import copyfile
 
 import torch
@@ -13,10 +12,13 @@ from config import code_path, data_path, figure_path, model_path
 from src.data import DataframeDataLoader
 from src.evaluation import evaluateModel
 from src.load_data import dataLoader
+from src.losses import nll_loss, nll_loss_manual
 from src.models.hediaNetExample import DilatedNet
 from src.parameter_sets.par import *
 from src.tools import train_cgm
 
+#
+#
 # %load_ext autoreload
 # %autoreload 2
 
@@ -71,16 +73,18 @@ data_obj = dataLoader(data_pars, features, n_steps_past=16,
 # EXTRACT DATA AND TEST THE MODEL
 # ---------------------------------------------------------------------
 config = {
-    "batch_size": 2,
-    "lr": 0.001,
+    "batch_size": 4,
+    "lr": 0.00613617,
     "h1": 32,
-    "h2": 64,
-    "wd": 0.05,
+    "h2": 16,
+    "final_1x1_1": 512,
+    "final_1x1_2": 64,
+    "wd": 0.0201964,
 }
 
 
 model = DilatedNet(h1=config["h1"],
-                   h2=config["h2"])
+                           h2=config["h2"])
 
 
 # Load training data
@@ -101,25 +105,40 @@ inputs, targets = data
 inputs = Variable(inputs.permute(0, 2, 1)).contiguous()
 
 output = model(inputs)
+print(output)
+print(targets)
+
 
 # %%
 # ---------------------------------------------------------------------
 # TRAING THE MODEL
 # ---------------------------------------------------------------------
+model_setup = {
+    'type': 'simple',
+    'loss': torch.nn.SmoothL1Loss(reduction='mean')
+}
+
 # Make sure the model archiecture loaded in train_cgm matches the hyper configuration
-train_cgm(config, max_epochs=30, grace_period=5,
-          n_epochs_stop=15, data_obj=data_obj, useRayTune=False)
+best_epoch_checkpoint_file_name = train_cgm(config, model_setup, max_epochs=30, grace_period=5,
+          n_epochs_stop=15, data_obj=data_obj, use_ray_tune=False)
+
+# Build network
+if model_setup['type'] == 'simple':
+    model = DilatedNet(h1=config["h1"], h2=config["h2"])
+elif model_setup['type'] == 'gaussian':
+    model = DilatedNetGaussian(h1=config["h1"], h2=config["h2"])
+
 
 # Load best model
-model_state, optimizer_state = torch.load(code_path / 'src' / 'model_state_tmp' / 'checkpoint')
+model_state, optimizer_state = torch.load(best_epoch_checkpoint_file_name)
 model.load_state_dict(model_state)
 
 # Copy the trained model to model path
-copyfile(code_path / 'src' / 'model_state_tmp' / 'checkpoint',
+copyfile(best_epoch_checkpoint_file_name,
          model_path_id / 'checkpoint')
 
-with open(code_path / 'src' / 'model_state_tmp' / 'hyperPars.json', 'w') as fp:
-    json.dump(config, fp)
+#with open(code_path / 'src' / 'model_state_tmp' / 'hyperPars.json', 'w') as fp:
+#    json.dump(config, fp)
 
 
 # %% Evaluate model
@@ -129,7 +148,8 @@ with open(code_path / 'src' / 'model_state_tmp' / 'hyperPars.json', 'w') as fp:
 evaluationConfiguration = {
     'distance': True,
     'hypo': True,
-    'clarke': True,
+    'clarke': False,
+    'parke': True,
     'lag': True,
     'plotLag': True,
     'plotTimeseries': True
@@ -138,6 +158,7 @@ evaluationConfiguration = {
 
 evalObject = evaluateModel(data_obj, model)
 
+#
 if evaluationConfiguration['distance']:
     distance = evalObject.get_distanceAnalysis()
 if evaluationConfiguration['hypo']:
@@ -147,5 +168,8 @@ if evaluationConfiguration['lag']:
 if evaluationConfiguration['plotTimeseries']:
     evalObject.get_timeSeriesPlot(figure_path=model_figure_path)
 if evaluationConfiguration['clarke']:
-    clarkes, clarkes_prob = evalObject.clarkesErrorGrid(
+    clarkes, clarkes_prob = evalObject.apply_clarkes_error_grid(
+        'mg/dl', figure_path=model_figure_path)
+if evaluationConfiguration['parke']:
+    parkes, parkes_prob = evalObject.apply_parkes_error_grid(
         'mg/dl', figure_path=model_figure_path)

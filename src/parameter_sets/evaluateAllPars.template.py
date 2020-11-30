@@ -1,6 +1,13 @@
 import pandas as pd
 
+from ..losses import NLL
+
 features = ['CGM', 'CHO', 'insulin', 'CGM_delta']
+
+model_setup = {
+    'type': 'gaussian',
+    'loss': NLL  # torch.nn.SmoothL1Loss(reduction='mean')  # NLL
+}
 
 # Define search parameters
 # ----------------------------------------
@@ -16,7 +23,6 @@ MAX_NUM_EPOCHS_FINAL = 50
 N_EPOCHS_STOP_FINAL = 15
 GRACE_PERIOD_FINAL = 5
 # ----------------------------------------
-
 
 # Define dates
 dates = pd.DataFrame(
