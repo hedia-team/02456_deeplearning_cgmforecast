@@ -1,12 +1,12 @@
 import pandas as pd
 
-from src.data import DataframeDataset, DataframeDataLoader, ConcatDataframeDataset, CreateDatasetWrapper
+from src.data import (ConcatDataframeDataset, CreateDatasetWrapper,
+                      DataframeDataLoader, DataframeDataset)
 
 
 class dataLoader:
     def __init__(self, data_pars, features, n_steps_past, n_steps_future, allowed_gap, scaler):
 
-        
         self.features = features
         self.n_steps_past = n_steps_past
         self.n_steps_future = n_steps_future
@@ -25,7 +25,7 @@ class dataLoader:
         self.end_date_train = data_pars['end_date_train']
         self.end_date_test = data_pars['end_date_test']
         self.end_date_validation = data_pars['end_date_validation']
-                 
+
     def load_test_data(self, test_data=None, start_date_test=None, end_date_test=None):
         if test_data is None:
             test_data = self.test_data
@@ -49,17 +49,16 @@ class dataLoader:
             n_steps_past=self.n_steps_past,
             n_steps_future=self.n_steps_future,
             allowed_gap=self.allowed_gap,
-            scaler=self.scaler,#scaler.fit_transform if i == 0 else scaler.transform
+            scaler=self.scaler,  # scaler.fit_transform if i == 0 else scaler.transform
             fit=True,
             skip_missing_data=True
-            )
+        )
 
         return dset_test
 
-
     def load_train_and_val(self):
         # Prepare training set
-        #scaler = MinMaxScaler()
+        # scaler = MinMaxScaler()
         train_datasets = []
         for i in range(len(self.train_data)):
             df = pd.read_csv(
@@ -77,14 +76,40 @@ class dataLoader:
                     n_steps_past=self.n_steps_past,
                     n_steps_future=self.n_steps_future,
                     allowed_gap=self.allowed_gap,
-                    scaler=self.scaler,#scaler.fit_transform if i == 0 else scaler.transform
+                    scaler=self.scaler,  # scaler.fit_transform if i == 0 else scaler.transform
                     fit=True if i == 0 else False,
                     skip_missing_data=True
                 )
             )
         train_datasets_concat = ConcatDataframeDataset(train_datasets)
-            
 
-        dset_val = self.load_test_data(self.validation_data, self.start_date_validation, self.end_date_validation)
+        # Validation set
+        if isinstance(self.validation_data, list):  # If user wants multiple validation datasets
+            val_datasets = []
+            for i in range(len(self.validation_data)):
+                df = pd.read_csv(
+                    self.data_path / f'{self.validation_data[i]}.csv',
+                    parse_dates=['Time'],
+                    infer_datetime_format=True,
+                    index_col='Time',
+                )
+                df = df.loc[self.start_date_validation[i]:self.end_date_validation[i]].copy()
+
+                val_datasets.append(
+                    CreateDatasetWrapper(
+                        df=df,
+                        features=self.features,
+                        n_steps_past=self.n_steps_past,
+                        n_steps_future=self.n_steps_future,
+                        allowed_gap=self.allowed_gap,
+                        scaler=self.scaler,  # scaler.fit_transform if i == 0 else scaler.transform
+                        fit=0,
+                        skip_missing_data=True
+                    )
+                )
+            dset_val = ConcatDataframeDataset(val_datasets)
+
+        else:  # If the user only has specified a single validation person
+            dset_val = self.load_test_data(self.validation_data, self.start_date_validation, self.end_date_validation)
 
         return train_datasets_concat, dset_val

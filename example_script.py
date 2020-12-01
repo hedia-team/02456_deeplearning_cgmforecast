@@ -52,7 +52,7 @@ data_pars = {}
 data_pars['path'] = data_path
 data_pars['train_data'] = train_data
 data_pars['test_data'] = test_data
-data_pars['validation_data'] = test_data
+data_pars['validation_data'] = val_data
 
 data_pars['start_date_train'] = start_date_train
 data_pars['start_date_test'] = start_date_test
@@ -84,7 +84,7 @@ config = {
 
 
 model = DilatedNet(h1=config["h1"],
-                           h2=config["h2"])
+                   h2=config["h2"])
 
 
 # Load training data
@@ -120,7 +120,7 @@ model_setup = {
 
 # Make sure the model archiecture loaded in train_cgm matches the hyper configuration
 best_epoch_checkpoint_file_name = train_cgm(config, model_setup, max_epochs=30, grace_period=5,
-          n_epochs_stop=15, data_obj=data_obj, use_ray_tune=False)
+                                            n_epochs_stop=15, data_obj=data_obj, use_ray_tune=False)
 
 # Build network
 if model_setup['type'] == 'simple':
@@ -137,7 +137,7 @@ model.load_state_dict(model_state)
 copyfile(best_epoch_checkpoint_file_name,
          model_path_id / 'checkpoint')
 
-#with open(code_path / 'src' / 'model_state_tmp' / 'hyperPars.json', 'w') as fp:
+# with open(code_path / 'src' / 'model_state_tmp' / 'hyperPars.json', 'w') as fp:
 #    json.dump(config, fp)
 
 
